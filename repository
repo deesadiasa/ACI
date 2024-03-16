@@ -1,1 +1,9 @@
-
+const firebaseConfig = {
+  apiKey: "AIzaSyAyL-L3PPQi5jTxKTFwaJFt3IuA7ULaRdY",
+  authDomain: "aci-repository.firebaseapp.com",
+  databaseURL: "https://aci-repository-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "aci-repository",
+  storageBucket: "aci-repository.appspot.com",
+  messagingSenderId: "102966053988",
+  appId: "1:102966053988:web:ea9121a40edacfc04ba371",
+  measurementId: "G-ER292Q6JZ6"
