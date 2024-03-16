@@ -118,11 +118,8 @@
             <label for="middleName">Middle Name:</label>
             <input type="text" id="middleName" name="middleName"><br>
 
-            <label for="email">Email Address:</label>
-            <input type="email" id="email" name="email" required><br>
-
             <label for="contactNumber">Contact Number:</label>
-            <input type="text" id="contactNumber" name="contactNumber" required><br>
+            <input type="text" id="contactNumber" name="contactNumber"><br>
 
             <label for="documentRequest">Document Request:</label>
             <select id="documentRequest" name="documentRequest" required>
@@ -159,8 +156,6 @@
                     <th>Surname</th>
                     <th>First Name</th>
                     <th>Middle Name</th>
-                    <th>Email Address</th>
-                    <th>Contact Number</th>
                     <th>Document Request</th>
                     <th>Purpose</th>
                     <th>Control Number</th>
@@ -168,7 +163,6 @@
                     <th>Date Requested</th>
                     <th>Date Issued</th>
                     <th>Status</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -177,8 +171,26 @@
         </table>
     </main>
 
-    <script>
-        document.getElementById('documentRequestForm').addEventListener('submit', function(event) {
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD2MCzmjaQAuOsMU2KkeATAenzf_3c1PEU",
+            authDomain: "aciaaa-f2831.firebaseapp.com",
+            projectId: "aciaaa-f2831",
+            storageBucket: "aciaaa-f2831.appspot.com",
+            messagingSenderId: "224199259873",
+            appId: "1:224199259873:web:0f899510ed233caddce9a0"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.getElementById('documentRequestForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent the form from submitting normally
 
             // Collect form data
@@ -188,41 +200,13 @@
             const jsonData = {};
             formData.forEach((value, key) => { jsonData[key] = value; });
 
-            // Add submitted data to table
-            const tableBody = document.getElementById('documentRequestsTable').getElementsByTagName('tbody')[0];
-            const newRow = tableBody.insertRow();
-            Object.values(jsonData).forEach(value => {
-                const cell = newRow.insertCell();
-                cell.textContent = value;
-            });
-
-            // Add dropdown field for status
-            const statusCell = newRow.insertCell();
-            const statusSelect = document.createElement('select');
-            statusSelect.name = 'status';
-            ['Pending', 'For Processing', 'For Signature', 'For Release', 'Received by student'].forEach(option => {
-                const optionElement = document.createElement('option');
-                optionElement.textContent = option;
-                statusSelect.appendChild(optionElement);
-            });
-            statusCell.appendChild(statusSelect);
-
-            // Add action button to send email
-            const actionCell = newRow.insertCell();
-            const emailButton = document.createElement('button');
-            emailButton.textContent = 'Send Email';
-            emailButton.addEventListener('click', function() {
-                const status = statusSelect.value;
-                if (status === 'For Release') {
-                    const emailAddress = jsonData['email'];
-                    const contactNumber = jsonData['contactNumber'];
-                    // Code to send email and/or SMS goes here
-                    alert(`Email sent to ${emailAddress} and SMS sent to ${contactNumber}`);
-                } else {
-                    alert('Document not yet for release.');
-                }
-            });
-            actionCell.appendChild(emailButton);
+            try {
+                // Add submitted data to Firestore collection
+                await addDoc(collection(db, 'documentRequests'), jsonData);
+                console.log('Document request data saved to Firestore successfully!');
+            } catch (error) {
+                console.error('Error saving document request data to Firestore:', error);
+            }
 
             // Reset form
             event.target.reset();
